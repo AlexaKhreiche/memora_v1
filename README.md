@@ -332,3 +332,4 @@ NEXT_PUBLIC_SIMLI_API_KEY=...     # Optional: enables the animated avatar
 | `OPENAI_API_KEY` | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
 | `HUME_API_KEY` | [platform.hume.ai](https://platform.hume.ai) |
 | `NEXT_PUBLIC_SIMLI_API_KEY` | [simli.com](https://simli.com) — optional, only needed for the avatar |
+# memora_v1
