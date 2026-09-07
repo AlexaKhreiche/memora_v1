@@ -1,0 +1,15 @@
+ad1/
+assets/
+__pycache__/
+.env
+.env.local
+.env*.local
+.DS_Store
+node_modules/
+.pytest_cache/
+frontend/.next/
+frontend/node_modules/
+__MACOSX/
+frontend/node_modules/
+frontend/.next/
+node_modules/

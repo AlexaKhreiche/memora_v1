@@ -1,0 +1,26 @@
+Construct,Item,Mean,Median,SD
+EE,Q4. The system interface is visually clear and easy to understand,4.636,5.0,0.492
+EE,Q5. The avatar feels natural and comforting,4.0,4.0,0.816
+EE,Q6. The design is appropriate for elderly users,4.182,4.0,0.733
+EE,Q7. The system feels easy to interact with,4.318,4.0,0.646
+EE,Q8. The system feels engaging,4.364,4.0,0.658
+PE,Q10. The system would help improve patient safety,4.636,5.0,0.581
+PE,Q11. The reminder system is useful for daily routines,4.773,5.0,0.429
+PE,Q12. The emotional interaction (avatar) is valuable,4.318,4.0,0.78
+PE,Q13. The system reduces caregiver burden,4.455,4.5,0.596
+PE,Q14. The system responds appropriately to situations,4.091,4.0,0.75
+BI,Q22. I would consider using this system,4.227,4.0,0.752
+BI,Q23. I would recommend this system to others,4.182,4.0,0.733
+BI,Q24. I believe this system adds value to ADRD care,4.455,5.0,0.739
+BI,Q25. How likely are you to recommend this system?,4.182,4.0,0.853
+TA,Q26. I feel nervous when using AI-based systems like this,2.591,3.0,1.098
+TA,Q27. I find systems like this intimidating,2.5,2.0,0.964
+TA,Q28. I feel uncomfortable relying on this technology,2.273,2.0,0.703
+TA,Q29. I would need assistance to use this system,2.591,3.0,0.959
+EA,Q30. I would trust this system more if recommended by a doctor,4.0,4.0,1.069
+EA,Q31. I would trust this system more if it was designed alongside a medical professional ,4.136,4.0,0.99
+PT,Q14. The system responds appropriately to situations,4.091,4.0,0.75
+PT,Q17. I am concerned about the system making incorrect decisions [reversed],3.273,3.0,0.985
+PT,Q18. I am concerned about over-reliance on the system [reversed],3.091,3.0,1.192
+PT,Q19. I am concerned about privacy and data security [reversed],3.545,4.0,1.184
+PT,Q20. I believe the system could cause emotional discomfort [reversed],3.636,4.0,0.953

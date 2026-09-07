@@ -1,0 +1,7 @@
+Construct,Label,N,Mean,95% CI low,95% CI high,t_stat,t_p_value,Cohen_d,Significance,Interpretation
+PE,Performance Expectancy,22,4.455,4.255,4.654,15.157,0.0,3.232,*** p < .001,Performance Expectancy was significantly above neutral
+EE,Effort Expectancy,22,4.3,4.078,4.522,12.183,0.0,2.598,*** p < .001,Effort Expectancy was significantly above neutral
+BI,Behavioural Intention,22,4.261,3.943,4.579,8.246,0.0,1.758,*** p < .001,Behavioural Intention was significantly above neutral
+TA,Technology Anxiety,22,2.489,2.182,2.796,-3.465,0.0023,-0.739,** p < .01,Technology Anxiety was significantly below neutral
+PT,Perceived Trust,22,3.527,3.209,3.846,3.442,0.0024,0.734,** p < .01,Perceived Trust was significantly above neutral
+EA,Expert Advice,22,4.068,3.645,4.492,5.247,0.0,1.119,*** p < .001,Expert Advice was significantly above neutral

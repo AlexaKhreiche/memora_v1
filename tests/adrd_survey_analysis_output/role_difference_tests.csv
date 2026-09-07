@@ -1,0 +1,7 @@
+Construct,Label,Included_roles,Kruskal_H,p_value,Significant_role_difference_0.05
+PE,Performance Expectancy,"Allied Medical Professional, Nurse, Patient Relative, Physician, Professional Caregiver",3.863,0.4248,False
+EE,Effort Expectancy,"Allied Medical Professional, Nurse, Patient Relative, Physician, Professional Caregiver",5.448,0.2444,False
+BI,Behavioural Intention,"Allied Medical Professional, Nurse, Patient Relative, Physician, Professional Caregiver",9.612,0.0475,True
+TA,Technology Anxiety,"Allied Medical Professional, Nurse, Patient Relative, Physician, Professional Caregiver",7.748,0.1013,False
+PT,Perceived Trust,"Allied Medical Professional, Nurse, Patient Relative, Physician, Professional Caregiver",6.27,0.1798,False
+EA,Expert Advice,"Allied Medical Professional, Nurse, Patient Relative, Physician, Professional Caregiver",1.094,0.8951,False

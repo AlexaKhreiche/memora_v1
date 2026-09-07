@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "patient_id": "P001",
+  "date": "2026-02-24",
+  "overrides": {
+    "add": [
+      { "id": "doc_appt", "title": "Doctor appointment", "time": "16:30", "notify_before_min": 60, "grace_after_min": 0, "priority": 1, "notes": "Bring documents" },
+        { "id": "walk", "title": "Afternoon walk", "time": "22:32", "notify_before_min": 15, "grace_after_min": 15, "priority": 2 }
+    ],
+    "update": [
+      { "id": "breakfast", "time": "10:00" }
+    ],
+    "remove": []
+  }
+}

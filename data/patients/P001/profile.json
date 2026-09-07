@@ -1,0 +1,46 @@
+{
+  "patient_id": "P001",
+  "name": "alexandra",
+  "preferred_name": "alexa",
+  "preferred_language": "english",
+  "routines": "",
+  "preferences": "various music, going to church, talking about daughter faten, eating fruits, growing plants, listening to music, watching tv, going on walks",
+  "calming_topics": "dancing, food, friends, having coffee with neighbors, visting grandchildren",
+  "triggers_to_avoid": "death of loves",
+  "mobility_notes": "",
+  "wandering_notes": "",
+  "medical_notes": "",
+  "communication_notes": "",
+  "caregiver_contacts": [],
+  "schema_version": "1.0",
+  "patient": {
+    "id": "P001",
+    "name": "alexandra",
+    "timezone": "Europe/Madrid",
+    "language": "english",
+    "preferred_language": "english",
+    "secondary_language": "ar",
+    "dialect_hint": "Lebanese Arabic",
+    "preferred_name": "alexa"
+  },
+  "care_team": {
+    "primary_caregiver": {
+      "name": "Betty",
+      "phone": "+34...",
+      "email": "..."
+    },
+    "backup_contacts": []
+  },
+  "family_context": {
+    "key_people": [
+      {
+        "name": "Faten",
+        "relation": "daughter"
+      }
+    ],
+    "history_notes": ""
+  },
+  "routine_template": {
+    "activities": []
+  }
+}

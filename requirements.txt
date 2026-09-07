@@ -1,0 +1,24 @@
+# Core
+pydantic==2.12.5
+python-dotenv==1.2.1
+
+# Vision / Pose / Fall & Presence detection
+mediapipe==0.10.13
+opencv-contrib-python==4.11.0.86
+numpy==2.4.2
+
+# LLM + Speech-to-text (Whisper API)
+openai==2.21.0
+
+# Microphone recording
+sounddevice==0.5.5
+
+# Emotion detection (Hume API)
+websocket-client==1.9.0
+requests==2.32.5
+
+# Config parsing
+pyyaml==6.0.3
+
+# Testing
+pytest==8.3.3

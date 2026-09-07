@@ -1,0 +1,32 @@
+scenario,run,description,expected_action,actual_action,correct,caregiver_alert_sent,condition_start,threshold_satisfied_at,decision_time,switch_delay_after_threshold_s,notes
+calm,1,Neutral emotion + normal message -> conversation,conversation,conversation,True,False,107178.763388,107178.763388,107182.786775,4.023387,
+calm,2,Neutral emotion + normal message -> conversation,conversation,conversation,True,False,107182.796624,107182.796624,107186.819227,4.022603,
+calm,3,Neutral emotion + normal message -> conversation,conversation,conversation,True,False,107186.826038,107186.826038,107190.846039,4.020001,
+happy,1,Happy emotion + normal message -> conversation,conversation,conversation,True,False,107190.855424,107190.855424,107194.883509,4.028085,
+happy,2,Happy emotion + normal message -> conversation,conversation,conversation,True,False,107194.900994,107194.900994,107198.922394,4.021400,
+happy,3,Happy emotion + normal message -> conversation,conversation,conversation,True,False,107198.942783,107198.942783,107202.967590,4.024807,
+agitation,1,Sustained agitation -> de_escalation,de_escalation,de_escalation,True,False,107202.987139,107205.987139,107208.022246,2.035107,
+agitation,2,Sustained agitation -> de_escalation,de_escalation,de_escalation,True,False,107208.040819,107211.040819,107213.077016,2.036197,
+agitation,3,Sustained agitation -> de_escalation,de_escalation,de_escalation,True,False,107213.091815,107216.091815,107218.129741,2.037926,
+distress,1,Sustained distress -> de_escalation,de_escalation,de_escalation,True,False,107218.145497,107221.145497,107223.185748,2.040252,
+distress,2,Sustained distress -> de_escalation,de_escalation,de_escalation,True,False,107223.199873,107226.199873,107228.228414,2.028541,
+distress,3,Sustained distress -> de_escalation,de_escalation,de_escalation,True,False,107228.238796,107231.238796,107233.267591,2.028796,
+reminiscence,1,Sustained calm state -> reminiscence,reminiscence,reminiscence,True,False,107233.290617,107238.290617,107240.334726,2.044109,
+reminiscence,2,Sustained calm state -> reminiscence,reminiscence,reminiscence,True,False,107240.350124,107245.350124,107247.405443,2.055319,
+reminiscence,3,Sustained calm state -> reminiscence,reminiscence,reminiscence,True,False,107247.428338,107252.428338,107254.480426,2.052087,
+sad,1,Sustained sadness -> reminiscence,reminiscence,reminiscence,True,False,107254.500459,107259.500459,107261.544157,2.043698,
+sad,2,Sustained sadness -> reminiscence,reminiscence,reminiscence,True,False,107261.565735,107266.565735,107268.615285,2.049550,
+sad,3,Sustained sadness -> reminiscence,reminiscence,reminiscence,True,False,107268.630130,107273.630130,107275.671667,2.041538,
+anxious,1,Sustained anxiety -> reminiscence,reminiscence,reminiscence,True,False,107275.682518,107280.682518,107282.736923,2.054405,
+anxious,2,Sustained anxiety -> reminiscence,reminiscence,reminiscence,True,False,107282.759994,107287.759994,107289.816361,2.056367,
+anxious,3,Sustained anxiety -> reminiscence,reminiscence,reminiscence,True,False,107289.836999,107294.836999,107296.877360,2.040362,
+fall,1,Immediate fall safety override,fall_protocol,fall_protocol,True,True,107296.890584,107296.890584,107296.895377,0.004793,
+fall,2,Immediate fall safety override,fall_protocol,fall_protocol,True,True,107296.896241,107296.896241,107296.901136,0.004894,
+fall,3,Immediate fall safety override,fall_protocol,fall_protocol,True,True,107296.902233,107296.902233,107296.906391,0.004158,
+wandering,1,Immediate wandering safety override,wandering_alert,wandering_alert,True,True,107296.907060,107296.907060,107296.907824,0.000765,
+wandering,2,Immediate wandering safety override,wandering_alert,wandering_alert,True,True,107296.908755,107296.908755,107296.909475,0.000720,
+wandering,3,Immediate wandering safety override,wandering_alert,wandering_alert,True,True,107296.910231,107296.910231,107296.910737,0.000506,
+mixed,1,Conversation -> de_escalation -> wandering,mixed,de_escalation,True,False,107303.982870,107306.982870,107311.519312,4.536442,Phase1=conversation; Phase2=de_escalation; Phase3=wandering_alert expected
+mixed,2,Conversation -> de_escalation -> wandering,mixed,de_escalation,True,False,107318.589923,107321.589923,107326.130119,4.540195,Phase1=conversation; Phase2=de_escalation; Phase3=wandering_alert expected
+mixed,3,Conversation -> de_escalation -> wandering,mixed,de_escalation,True,False,107333.226647,107336.226647,107340.763631,4.536984,Phase1=conversation; Phase2=de_escalation; Phase3=wandering_alert expected
+x

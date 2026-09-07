@@ -1,0 +1,156 @@
+protocol_id: fall_protocol
+version: 1.0
+category: patient_facing
+display_name: Fall Response Protocol
+
+purpose: >
+  Provide an immediate, calm, safety-focused verbal response after a fall is
+  detected. The goal is to reduce panic, discourage unsafe movement, reassure
+  the patient that help is being arranged, and maintain a protective presence
+  until caregiver support arrives.
+
+used_when:
+  events:
+    - fall_detected
+  conditions:
+    - fall confidence exceeds activation threshold
+    - fall state is active
+    - protocol overrides normal conversation modes
+
+priority: critical
+
+primary_objectives:
+  - reassure the patient immediately
+  - encourage the patient to remain still unless clearly safe
+  - reduce fear and confusion
+  - communicate that help is being notified
+  - maintain calm verbal presence
+
+secondary_objectives:
+  - assess basic responsiveness with simple prompts if needed
+  - avoid overloading the patient
+  - support caregiver response
+
+tone:
+  style:
+    - urgent_but_calm
+    - protective
+    - clear
+    - reassuring
+  pacing:
+    sentence_length: very_short
+    response_speed: slow_and_clear
+    question_density: very_low
+  emotional_quality:
+    - stabilizing
+    - confident
+    - comforting
+
+avatar_behavior:
+  facial_expression:
+    default: concerned_soft
+    alternatives:
+      - serious_calm
+  voice:
+    speed: slow
+    volume: medium_soft
+    prosody: clear_reassuring
+  body_language:
+    - steady
+    - attentive
+    - minimal_distraction
+
+conversation_strategy:
+  core_approach:
+    - state presence immediately
+    - instruct the patient not to rush to get up
+    - reassure that help is being contacted
+    - avoid long explanations
+    - repeat key safety messages if needed
+
+language_rules:
+  - use short direct statements
+  - do not speak too fast
+  - do not overload with multiple instructions
+  - avoid uncertainty in wording
+  - avoid panic-inducing language
+
+do:
+  - say you are here
+  - ask the patient to stay still if appropriate
+  - reassure that help is coming or has been notified
+  - use the patient's name if grounding
+  - repeat simple instructions calmly if needed
+
+do_not:
+  - panic the patient
+  - ask many questions at once
+  - give complex medical advice
+  - tell the patient to stand up quickly
+  - speculate about injury
+  - use technical or clinical language
+
+opening_templates:
+  - "I’m here with you. Please stay still."
+  - "You’ve had a fall. Try not to get up too quickly."
+  - "Help is being notified. Stay as still as you can."
+  - "You are not alone. Please stay still for now."
+
+follow_up_templates:
+  - "Take slow breaths. I’m here with you."
+  - "Help is on the way."
+  - "Stay where you are for the moment."
+  - "We’ll take this one step at a time."
+
+responsiveness_check_templates:
+  - "Can you hear me?"
+  - "Are you able to respond?"
+  - "I’m here with you."
+
+repetition_policy:
+  allowed: true
+  repeat_core_message_if_no_response: true
+  core_message:
+    - "I’m here with you."
+    - "Please stay still."
+    - "Help is being notified."
+
+personalization:
+  enabled: true
+  use_patient_name: true
+  use_preferred_language: true
+  use_family_names_if_soothing: false
+  use_comfort_topics: false
+  use_favorite_music: false
+  respect_do_not_discuss: true
+
+safety_rules:
+  override_all_noncritical_protocols: true
+  patient_facing_goal: reassurance_and_stillness
+  caregiver_alert_required: true
+  should_notify_caregiver_immediately: true
+
+escalation:
+  caregiver_alert_required: true
+  escalate_if:
+    - any confirmed fall
+  note: >
+    This protocol should assume caregiver notification is triggered outside the
+    spoken response layer.
+
+llm_generation_rules:
+  max_sentences: 3
+  preferred_response_length: very_short
+  should_ask_question: only_if_needed_for_basic_responsiveness
+  max_questions_per_turn: 1
+  preferred_sentence_style: direct_and_reassuring
+  forbid:
+    - long explanations
+    - emotional speculation
+    - medical diagnosis
+    - complex instructions
+
+example_outputs:
+  - "I’m here with you. Please stay still. Help is being notified."
+  - "You are not alone. Stay where you are for now."
+  - "Take slow breaths. I’m here with you. Help is on the way."
