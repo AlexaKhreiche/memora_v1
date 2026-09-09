@@ -14,7 +14,8 @@ class HumeHTTPClient:
     matching your ADRD_System approach.
 
     Face streaming endpoint:
-      wss://api.hume.ai/v0/stream/models?apikey=...
+      wss://api.hume.ai/v0/stream/models
+      Authentication header: X-Hume-Api-Key
 
     Request payload:
       {
@@ -31,12 +32,11 @@ class HumeHTTPClient:
     """
 
     def __init__(self) -> None:
-        self.api_key = os.getenv("HUME_API_KEY", "")
+        self.api_key = os.getenv("HUME_API_KEY", "").strip()
         if not self.api_key:
             raise RuntimeError("Missing HUME_API_KEY in environment (.env).")
 
-        # Exactly like your TS project:
-        self.socket_url = f"wss://api.hume.ai/v0/stream/models?apikey={self.api_key}"
+        self.socket_url = "wss://api.hume.ai/v0/stream/models"
 
     # -------------------------
     # FACE (streaming) – this is the method your EmotionMonitor calls
@@ -59,7 +59,11 @@ class HumeHTTPClient:
         b64 = base64.b64encode(jpg_bytes).decode("utf-8")
 
         # Create a short-lived websocket connection per request (simple + reliable)
-        ws = websocket.create_connection(self.socket_url, timeout=10)
+        ws = websocket.create_connection(
+            self.socket_url,
+            header={"X-Hume-Api-Key": self.api_key},
+            timeout=10,
+        )
 
         try:
             req = {
@@ -109,4 +113,3 @@ class HumeHTTPClient:
                 ws.close()
             except Exception:
                 pass
-

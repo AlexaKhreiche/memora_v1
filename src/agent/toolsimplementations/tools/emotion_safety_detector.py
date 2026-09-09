@@ -1,113 +1,32 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Tuple
 
 from models.shared import EmotionLabel, RiskLevel
 from models.tools_schemas.emotion_safety_detector_report import SignalReport
 
 
-# -----------------------------
-# Ported from ADRD_System:
-# src/app/api/emotion-face/route.ts
-# -----------------------------
-EMOTION_MAPPING: Dict[str, EmotionLabel] = {
-    # Calm/Relaxed
-    "Calmness": EmotionLabel.calm,
-    "Contentment": EmotionLabel.calm,
-    "Relief": EmotionLabel.calm,
-    "Serenity": EmotionLabel.calm,
-    "Satisfaction": EmotionLabel.calm,
-
-    # Happy
-    "Joy": EmotionLabel.happy,
-    "Amusement": EmotionLabel.happy,
-    "Ecstasy": EmotionLabel.happy,
-    "Excitement": EmotionLabel.happy,
-    "Triumph": EmotionLabel.happy,
-    "Pride": EmotionLabel.happy,
-    "Interest": EmotionLabel.happy,
-    "Enthusiasm": EmotionLabel.happy,
-
-    # Sad
-    "Sadness": EmotionLabel.sad,
-    "Disappointment": EmotionLabel.sad,
-    "Grief": EmotionLabel.sad,
-    "Despair": EmotionLabel.sad,
-    "Nostalgia": EmotionLabel.sad,
-
-    # Confused
-    "Confusion": EmotionLabel.confused,
-    "Doubt": EmotionLabel.confused,
-    "Contemplation": EmotionLabel.confused,
-    "Surprise (negative)": EmotionLabel.confused,
-
-    # Agitated
-    "Anger": EmotionLabel.agitated,
-    "Annoyance": EmotionLabel.agitated,
-    "Frustration": EmotionLabel.agitated,
-    "Contempt": EmotionLabel.agitated,
-    "Disgust": EmotionLabel.agitated,
-    "Irritation": EmotionLabel.agitated,
-
-    # Distressed
-    "Distress": EmotionLabel.distressed,
-    "Fear": EmotionLabel.distressed,
-    "Anxiety": EmotionLabel.distressed,  # ADRD_System maps Anxiety into distressed bucket
-    "Horror": EmotionLabel.distressed,
-    "Pain": EmotionLabel.distressed,
-    "Panic": EmotionLabel.distressed,
-    "Terror": EmotionLabel.distressed,
-
-    # Anxious
-    "Awkwardness": EmotionLabel.anxious,
-    "Embarrassment": EmotionLabel.anxious,
-    "Nervousness": EmotionLabel.anxious,
-    "Tension": EmotionLabel.anxious,
-    "Worry": EmotionLabel.anxious,
-    "Shame": EmotionLabel.anxious,
-
-    # Neutral
-    "Boredom": EmotionLabel.neutral,
-    "Concentration": EmotionLabel.neutral,
-    "Realization": EmotionLabel.neutral,
-    "Determination": EmotionLabel.neutral,
+# DeepFace expressions mapped to the application's existing categories.
+# Surprise has no positive/negative valence, so do not infer confusion from it.
+EMOTION_MAPPING = {
+    "happy": EmotionLabel.happy,
+    "sad": EmotionLabel.sad,
+    "angry": EmotionLabel.agitated,
+    "disgust": EmotionLabel.agitated,
+    "fear": EmotionLabel.distressed,
+    "neutral": EmotionLabel.neutral,
+    "surprise": EmotionLabel.uncertain,
 }
 
 
-def _aggregate_hume_emotions(face_scores: Dict[str, float]) -> List[Tuple[EmotionLabel, float]]:
-    """
-    Port of ADRD_System aggregateEmotions():
-      - group Hume emotions by mapped category
-      - average within category
-      - boost avg slightly (x1.2) and cap at 1.0
-      - return sorted desc
-    """
-    buckets: Dict[EmotionLabel, List[float]] = {
-        EmotionLabel.calm: [],
-        EmotionLabel.happy: [],
-        EmotionLabel.sad: [],
-        EmotionLabel.confused: [],
-        EmotionLabel.agitated: [],
-        EmotionLabel.distressed: [],
-        EmotionLabel.anxious: [],
-        EmotionLabel.neutral: [],
-    }
-
-    for name, score in (face_scores or {}).items():
-        mapped = EMOTION_MAPPING.get(name)
-        if mapped is not None:
-            buckets[mapped].append(float(score))
-
-    result: List[Tuple[EmotionLabel, float]] = []
-    for label, scores in buckets.items():
-        if scores:
-            avg = sum(scores) / len(scores)
-            boosted = min(1.0, avg * 1.2)
-            result.append((label, boosted))
-
-    result.sort(key=lambda x: x[1], reverse=True)
-    return result
+def _aggregate_emotions(face_scores: Dict[str, float]) -> List[Tuple[EmotionLabel, float]]:
+    # Preserve the strongest expression's score; do not boost confidence.
+    buckets: Dict[EmotionLabel, float] = {}
+    for name, score in face_scores.items():
+        label = EMOTION_MAPPING.get(name)
+        if label is not None:
+            buckets[label] = max(buckets.get(label, 0.0), float(score))
+    return sorted(buckets.items(), key=lambda item: item[1], reverse=True)
 
 
 def _risk_from_emotion(label: EmotionLabel, conf: float) -> Tuple[float, RiskLevel]:
@@ -144,13 +63,13 @@ def _risk_from_emotion(label: EmotionLabel, conf: float) -> Tuple[float, RiskLev
 
 
 class EmotionSafetyDetector:
-    """Face-only emotion mapping using Hume AI scores."""
+    """Face-only emotion mapping using DeepFace scores."""
 
     def build_report(
         self,
         face_raw_scores: Dict[str, float],
     ) -> Tuple[SignalReport, Dict]:
-        aggregated = _aggregate_hume_emotions(face_raw_scores or {})
+        aggregated = _aggregate_emotions(face_raw_scores or {})
         debug = {
             "source": "face",
             "mapped_count": len(aggregated),
@@ -158,9 +77,9 @@ class EmotionSafetyDetector:
         }
 
         if not aggregated:
-            # Mirror your previous behavior: default neutral when nothing detected
-            label = EmotionLabel.neutral
-            conf = 0.5
+            # No observation must not masquerade as a neutral expression.
+            label = EmotionLabel.uncertain
+            conf = 0.0
         else:
             label, conf = aggregated[0]
 

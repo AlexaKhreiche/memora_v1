@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from agent.runtime.debug_log import debug_print
+
 import time
 import threading
 import cv2
@@ -67,9 +69,9 @@ class SafetyMonitor:
             presence = self.presence.update(kps)
 
             if result.confidence > 0.1:
-                print(f"fall={result.fall_detected} conf={result.confidence:.2f} reasons={result.reasons}")
+                debug_print(f"fall={result.fall_detected} conf={result.confidence:.2f} reasons={result.reasons}")
             if not presence.person_present and presence.absence_duration_s > 0:
-                print(f"presence={presence.person_present} absent={presence.absence_duration_s:.1f}s wandering={presence.wandering_detected}")
+                debug_print(f"presence={presence.person_present} absent={presence.absence_duration_s:.1f}s wandering={presence.wandering_detected}")
 
 
             # Optional live preview for debugging

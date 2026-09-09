@@ -2,303 +2,874 @@
   "patient_id": "P001",
   "patient_name": "alexandra",
   "phase": "WAITING",
-  "stable_emotion": "neutral",
-  "stable_emotion_confidence": 1.0,
-  "current_intervention": "conversation",
-  "text_to_say": "Hello, my name is Maria. It's good to see you alexa, how are you feeling today?",
+  "stable_emotion": "uncertain",
+  "stable_emotion_confidence": 0.0,
+  "current_intervention": "de_escalation",
+  "text_to_say": "Hi alexandra, I'm still here with you. Would you like to chat for a moment?",
   "avatar_actions": [
-    "gentle_smile",
     "listening_pose"
   ],
-  "response_language": "en",
+  "response_language": "english",
   "interaction_mode": "speaking",
   "speech_style": {
     "pace": "slow",
-    "tone": "warm",
-    "volume": "soft",
+    "tone": "steady_reassuring_soft",
+    "volume": "low",
     "voice_hint": "gentle"
   },
   "fall_active": false,
-  "wandering_active": false,
+  "wandering_active": true,
   "caregiver_alert_sent": false,
   "risk_level": "low",
-  "risk_score": 0.15000000000000002,
-  "updated_at": "2026-09-07T09:09:55.434536+00:00",
-  "last_transcript": "",
+  "risk_score": 0.05,
+  "updated_at": "2026-09-09T10:12:29.720879+00:00",
+  "last_transcript": "Como eu falo também?",
   "emotion_log": [
     {
-      "id": "emotion_1788772160142",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874797803",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:20.142776+00:00"
+      "timestamp": "2026-09-08T13:39:57.803928+00:00"
     },
     {
-      "id": "emotion_1788772161191",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874799290",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:21.191557+00:00"
+      "timestamp": "2026-09-08T13:39:59.290319+00:00"
     },
     {
-      "id": "emotion_1788772162618",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874800779",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:22.618149+00:00"
+      "timestamp": "2026-09-08T13:40:00.779361+00:00"
     },
     {
-      "id": "emotion_1788772163641",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874802269",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:23.641392+00:00"
+      "timestamp": "2026-09-08T13:40:02.269831+00:00"
     },
     {
-      "id": "emotion_1788772164694",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874803738",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:24.694162+00:00"
+      "timestamp": "2026-09-08T13:40:03.738754+00:00"
     },
     {
-      "id": "emotion_1788772166230",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874804739",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:26.230866+00:00"
+      "timestamp": "2026-09-08T13:40:04.739977+00:00"
     },
     {
-      "id": "emotion_1788772167254",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874806232",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:27.254076+00:00"
+      "timestamp": "2026-09-08T13:40:06.232785+00:00"
     },
     {
-      "id": "emotion_1788772168690",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874807261",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:28.690948+00:00"
+      "timestamp": "2026-09-08T13:40:07.261087+00:00"
     },
     {
-      "id": "emotion_1788772169742",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874808278",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:29.742098+00:00"
+      "timestamp": "2026-09-08T13:40:08.278485+00:00"
     },
     {
-      "id": "emotion_1788772170781",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874809802",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:30.781332+00:00"
+      "timestamp": "2026-09-08T13:40:09.802091+00:00"
     },
     {
-      "id": "emotion_1788772172201",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874810812",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:32.201201+00:00"
+      "timestamp": "2026-09-08T13:40:10.812051+00:00"
     },
     {
-      "id": "emotion_1788772173249",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874811835",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:33.249962+00:00"
+      "timestamp": "2026-09-08T13:40:11.835511+00:00"
     },
     {
-      "id": "emotion_1788772174706",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874812874",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:34.706319+00:00"
+      "timestamp": "2026-09-08T13:40:12.874439+00:00"
     },
     {
-      "id": "emotion_1788772175754",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874813897",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:35.754057+00:00"
+      "timestamp": "2026-09-08T13:40:13.897315+00:00"
     },
     {
-      "id": "emotion_1788772176774",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874814903",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:36.774688+00:00"
+      "timestamp": "2026-09-08T13:40:14.903153+00:00"
     },
     {
-      "id": "emotion_1788772178253",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874815903",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:38.253176+00:00"
+      "timestamp": "2026-09-08T13:40:15.903892+00:00"
     },
     {
-      "id": "emotion_1788772179337",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874816951",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:39.337235+00:00"
+      "timestamp": "2026-09-08T13:40:16.951967+00:00"
     },
     {
-      "id": "emotion_1788772180362",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874818453",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:40.362914+00:00"
+      "timestamp": "2026-09-08T13:40:18.453416+00:00"
     },
     {
-      "id": "emotion_1788772181810",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874819468",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:41.810054+00:00"
+      "timestamp": "2026-09-08T13:40:19.468720+00:00"
     },
     {
-      "id": "emotion_1788772182842",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874820976",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:42.842544+00:00"
+      "timestamp": "2026-09-08T13:40:20.976690+00:00"
     },
     {
-      "id": "emotion_1788772183947",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874821979",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:43.947758+00:00"
+      "timestamp": "2026-09-08T13:40:21.979312+00:00"
     },
     {
-      "id": "emotion_1788772185308",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874823002",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:45.308257+00:00"
+      "timestamp": "2026-09-08T13:40:23.002277+00:00"
     },
     {
-      "id": "emotion_1788772186357",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874824006",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:46.357307+00:00"
+      "timestamp": "2026-09-08T13:40:24.006227+00:00"
     },
     {
-      "id": "emotion_1788772187844",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874825519",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:47.844986+00:00"
+      "timestamp": "2026-09-08T13:40:25.519963+00:00"
     },
     {
-      "id": "emotion_1788772188876",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874826552",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:48.876232+00:00"
+      "timestamp": "2026-09-08T13:40:26.552833+00:00"
     },
     {
-      "id": "emotion_1788772190361",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874828058",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:50.361232+00:00"
+      "timestamp": "2026-09-08T13:40:28.058983+00:00"
     },
     {
-      "id": "emotion_1788772191899",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874829557",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:51.899018+00:00"
+      "timestamp": "2026-09-08T13:40:29.557826+00:00"
     },
     {
-      "id": "emotion_1788772193379",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788874830587",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:53.379208+00:00"
+      "timestamp": "2026-09-08T13:40:30.587055+00:00"
     },
     {
-      "id": "emotion_1788772194379",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788948730144",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:54.379285+00:00"
+      "timestamp": "2026-09-09T10:12:10.144720+00:00"
     },
     {
-      "id": "emotion_1788772195434",
-      "label": "neutral",
-      "confidence": 0.5,
+      "id": "emotion_1788948731288",
+      "label": "uncertain",
+      "confidence": 0.0,
       "risk_level": "low",
-      "risk_score": 0.15000000000000002,
+      "risk_score": 0.05,
       "source": "face",
-      "timestamp": "2026-09-07T09:09:55.434399+00:00"
+      "timestamp": "2026-09-09T10:12:11.288162+00:00"
     }
   ],
-  "safety_log": [],
-  "alerts": [],
+  "safety_log": [
+    {
+      "id": "safety_1788874600048",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 379.2s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:36:40.048703+00:00"
+    },
+    {
+      "id": "safety_1788874608081",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 387.2s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:36:48.081401+00:00"
+    },
+    {
+      "id": "safety_1788874616124",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 395.2s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:36:56.124912+00:00"
+    },
+    {
+      "id": "safety_1788874624146",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 403.3s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:37:04.146768+00:00"
+    },
+    {
+      "id": "safety_1788874632186",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 411.3s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:37:12.186597+00:00"
+    },
+    {
+      "id": "safety_1788874640194",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 419.3s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:37:20.194026+00:00"
+    },
+    {
+      "id": "safety_1788874648195",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 427.3s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:37:28.195555+00:00"
+    },
+    {
+      "id": "safety_1788874656262",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 435.4s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:37:36.262626+00:00"
+    },
+    {
+      "id": "safety_1788874664316",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 443.4s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:37:44.316550+00:00"
+    },
+    {
+      "id": "safety_1788874672347",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 451.5s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:37:52.347485+00:00"
+    },
+    {
+      "id": "safety_1788874680384",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 459.5s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:38:00.384088+00:00"
+    },
+    {
+      "id": "safety_1788874688505",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 467.6s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:38:08.505382+00:00"
+    },
+    {
+      "id": "safety_1788874696594",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 475.7s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:38:16.594407+00:00"
+    },
+    {
+      "id": "safety_1788874704688",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 483.8s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:38:24.688930+00:00"
+    },
+    {
+      "id": "safety_1788874712830",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 491.9s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:38:32.830367+00:00"
+    },
+    {
+      "id": "safety_1788874720860",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 500.0s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:38:40.860607+00:00"
+    },
+    {
+      "id": "safety_1788874728965",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 508.0s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:38:48.965958+00:00"
+    },
+    {
+      "id": "safety_1788874737037",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 516.2s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:38:57.037111+00:00"
+    },
+    {
+      "id": "safety_1788874745039",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 524.2s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:39:05.039814+00:00"
+    },
+    {
+      "id": "safety_1788874753080",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 532.2s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:39:13.080714+00:00"
+    },
+    {
+      "id": "safety_1788874761101",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 540.2s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:39:21.101918+00:00"
+    },
+    {
+      "id": "safety_1788874769102",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 548.2s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:39:29.102593+00:00"
+    },
+    {
+      "id": "safety_1788874777174",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 556.3s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:39:37.174242+00:00"
+    },
+    {
+      "id": "safety_1788874785257",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 564.4s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:39:45.257077+00:00"
+    },
+    {
+      "id": "safety_1788874793458",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 572.6s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:39:53.458669+00:00"
+    },
+    {
+      "id": "safety_1788874801596",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 580.7s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:40:01.597009+00:00"
+    },
+    {
+      "id": "safety_1788874809657",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 588.8s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:40:09.657152+00:00"
+    },
+    {
+      "id": "safety_1788874817685",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 596.8s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:40:17.685266+00:00"
+    },
+    {
+      "id": "safety_1788874825826",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 604.9s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-08T13:40:25.826395+00:00"
+    },
+    {
+      "id": "safety_1788948729615",
+      "type": "wandering",
+      "active": true,
+      "confidence": 1.0,
+      "reasons": [
+        "No pose detected",
+        "Absent 74508.7s — exceeded threshold"
+      ],
+      "timestamp": "2026-09-09T10:12:09.615205+00:00"
+    }
+  ],
+  "alerts": [
+    {
+      "id": "alert_1788874600048",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:36:40.048714+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874608081",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:36:48.081420+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874616124",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:36:56.124929+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874624146",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:37:04.146782+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874632186",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:37:12.186613+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874640194",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:37:20.194037+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874648195",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:37:28.195571+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874656262",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:37:36.262654+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874664316",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:37:44.316561+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874672347",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:37:52.347508+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874680384",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:38:00.384102+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874688505",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:38:08.505393+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874696594",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:38:16.594416+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874704688",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:38:24.688948+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874712830",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:38:32.830381+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874720860",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:38:40.860619+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874728965",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:38:48.965969+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874737037",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:38:57.037120+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874745039",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:39:05.039822+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874753080",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:39:13.080730+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874761101",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:39:21.101935+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874769102",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:39:29.102605+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874777174",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:39:37.174266+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874785257",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:39:45.257089+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874793458",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:39:53.458685+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874801597",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:40:01.597025+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874809657",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:40:09.657162+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874817685",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:40:17.685285+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788874825826",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-08T13:40:25.826411+00:00",
+      "acknowledged": false
+    },
+    {
+      "id": "alert_1788948729615",
+      "type": "wandering",
+      "severity": "warning",
+      "message": "Possible wandering / out-of-frame event detected.",
+      "timestamp": "2026-09-09T10:12:09.615252+00:00",
+      "acknowledged": false
+    }
+  ],
   "reminders_due": [],
   "next_reminder_iso": null,
   "trace_id": null,
@@ -306,5 +877,5 @@
   "t_created": null,
   "t_published": null,
   "t_received": null,
-  "t_finalized": 12875.690226583
+  "t_finalized": 25010.44387525
 }

@@ -1,14 +1,19 @@
 from __future__ import annotations
 
+from agent.runtime.debug_log import debug_print
+
 import threading
 import time
+import sys
+import os
 from typing import Optional
 
 import cv2
 
 from agent.core.rules import Event, EventType
 from agent.runtime.event_bus import EventBus
-from agent.toolsimplementations.tools.hume_http import HumeHTTPClient
+from agent.toolsimplementations.tools.deepface_client import DeepFaceClient
+from agent.toolsimplementations.tools.vit_face_client import ViTFaceClient
 from agent.toolsimplementations.tools.emotion_safety_detector import EmotionSafetyDetector
 
 
@@ -26,8 +31,10 @@ class EmotionMonitor:
         fps: float = 2.0,               # low FPS is enough for emotion; keeps CPU low
         publish_every_s: float = 1.0,   # publish frequency
         show_preview: bool = False,
+        voice_emotion=None,
     ) -> None:
         self.bus = bus
+        self.voice_emotion = voice_emotion
         self.patient_id = patient_id
         self.camera_index = camera_index
         self.fps = fps
@@ -37,7 +44,8 @@ class EmotionMonitor:
         self._running = False
         self._thread: Optional[threading.Thread] = None
 
-        self.hume = None
+        self.face_enabled = os.getenv("FACIAL_EMOTION_ENABLED", "1") != "0"
+        self.face_client = None
         self.detector = EmotionSafetyDetector()
 
     def start(self) -> None:
@@ -53,51 +61,63 @@ class EmotionMonitor:
             self._thread.join(timeout=2.0)
 
     def _loop(self) -> None:
-        cap = cv2.VideoCapture(self.camera_index)
-        if not cap.isOpened():
+        cap = cv2.VideoCapture(self.camera_index) if self.face_enabled else None
+        if cap is not None and not cap.isOpened():
             print("[EmotionMonitor] Could not open camera.")
             return
 
         try:
-            # Lazily initialize Hume client so dev can run without it
-            try:
-                self.hume = HumeHTTPClient()
-                print("[EmotionMonitor] Hume client initialized.")
-            except Exception as e:
-                print(f"[EmotionMonitor] Hume disabled: {e}")
-                self.hume = None
+            if self.face_enabled:
+                # Lazily initialize DeepFace client so dev can run without it
+                try:
+                    backend = os.getenv("FACE_EMOTION_BACKEND", "vit").lower()
+                    if backend not in ("vit", "deepface"):
+                        raise ValueError("FACE_EMOTION_BACKEND must be vit or deepface")
+                    self.face_client = ViTFaceClient() if backend == "vit" else DeepFaceClient()
+                    debug_print(f"[EmotionMonitor] Facial classifier ready: {backend}")
+                except Exception as e:
+                    print(f"[EmotionMonitor] Facial classifier disabled: {e}; Python={sys.executable}. Use the project .venv and restart.")
+                    self.face_client = None
 
             frame_interval = 1.0 / max(self.fps, 0.5)
             last_publish = 0.0
 
             while self._running:
                 t0 = time.time()
-                ok, frame = cap.read()
-                if not ok:
-                    time.sleep(0.1)
-                    continue
+                if cap is not None:
+                    ok, frame = cap.read()
+                    if not ok:
+                        time.sleep(0.1)
+                        continue
 
-                if self.show_preview:
-                    cv2.imshow("EmotionMonitor", frame)
-                    if cv2.waitKey(1) & 0xFF == ord("q"):
-                        self._running = False
-                        break
+                    if self.show_preview:
+                        cv2.imshow("EmotionMonitor", frame)
+                        if cv2.waitKey(1) & 0xFF == ord("q"):
+                            self._running = False
+                            break
 
                 face_scores = {}
-                if self.hume is not None:
+                detection_status = "initialization_failed"
+                if self.face_client is not None:
                     try:
-                        face_scores = self.hume.facial_scores_from_bgr_frame(frame)
+                        face_scores = self.face_client.facial_scores_from_bgr_frame(frame)
+                        detection_status = self.face_client.status
                     except Exception as e:
-                        print(f"[EmotionMonitor] Hume face error: {e}")
+                        print(f"[EmotionMonitor] Facial classifier error: {e}")
+                        detection_status = "inference_failed"
                         face_scores = {}
 
+                combined, source = self.voice_emotion.fuse(face_scores) if self.voice_emotion else (face_scores, "face")
+                if not self.face_enabled:
+                    source = "voice"
                 report, debug = self.detector.build_report(
-                    face_raw_scores=face_scores,
+                    face_raw_scores=combined,
                 )
 
                 now = time.time()
                 if (now - last_publish) >= self.publish_every_s:
-                    print(f"[EmotionMonitor] face_scores={len(face_scores)} publish=True")
+                    top = sorted(face_scores.items(), key=lambda item: item[1], reverse=True)[:3]
+                    debug_print(f"[EmotionMonitor] status={detection_status} face_scores={len(face_scores)} top={top} publish=True")
 
                     self.bus.publish(
                         Event(
@@ -108,7 +128,7 @@ class EmotionMonitor:
                                 "emotion_confidence": float(report.emotion_confidence),
                                 "risk_level": str(getattr(report.risk_level, "value", report.risk_level)),
                                 "risk_score": float(report.risk_score),
-                                "source": "face",
+                                "source": source,
                             },
                         )
                     )
@@ -120,6 +140,7 @@ class EmotionMonitor:
                     time.sleep(sleep)
 
         finally:
-            cap.release()
-            if self.show_preview:
+            if cap is not None:
+                cap.release()
+            if self.show_preview and cap is not None:
                 cv2.destroyWindow("EmotionMonitor")

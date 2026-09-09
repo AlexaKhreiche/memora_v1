@@ -5,7 +5,7 @@ python-dotenv==1.2.1
 # Vision / Pose / Fall & Presence detection
 mediapipe==0.10.13
 opencv-contrib-python==4.11.0.86
-numpy==2.4.2
+numpy>=1.26.4,<2.0
 
 # LLM + Speech-to-text (Whisper API)
 openai==2.21.0
@@ -13,8 +13,10 @@ openai==2.21.0
 # Microphone recording
 sounddevice==0.5.5
 
-# Emotion detection (Hume API)
-websocket-client==1.9.0
+# Local facial expression analysis (Python 3.10–3.12)
+deepface==0.0.99
+tensorflow==2.16.2
+tf-keras==2.16.0
 requests==2.32.5
 
 # Config parsing
@@ -22,3 +24,8 @@ pyyaml==6.0.3
 
 # Testing
 pytest==8.3.3
+
+# Local speech emotion analysis
+torch>=2.6,<3
+transformers>=4.48,<5
+imageio-ffmpeg>=0.6,<0.7

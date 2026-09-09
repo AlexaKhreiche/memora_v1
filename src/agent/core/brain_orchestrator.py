@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from agent.runtime.debug_log import debug_print
+
 from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from typing import Any, Dict, Optional
@@ -18,7 +20,7 @@ from models.shared import EmotionLabel, RiskLevel
 from models.decision import ActionType
 from agent.runtime.debug_log import log_block, log_line, log_latency
 
-from agent.core.rules import Event, EventType, choose_decision
+from agent.core.rules import Event, EventType, choose_decision, _emotion_to_mode
 from agent.toolsimplementations.tools.daily_reminder_tool import check_caregiver_schedule
 from agent.toolsimplementations.interventions.registry import get_intervention
 
@@ -150,10 +152,10 @@ class BrainOrchestrator:
         )
         state.last_decision = decision
 
-        print("=== SENSOR ALERT DEBUG ===")
-        print("Decision:", decision.action)
-        print("Signals:", state.last_signals)
-        print("Transcript:", None)
+        debug_print("=== SENSOR ALERT DEBUG ===")
+        debug_print("Decision:", decision.action)
+        debug_print("Signals:", state.last_signals)
+        debug_print("Transcript:", None)
 
         action_name = self._action_name(decision.action)
 
@@ -288,7 +290,7 @@ class BrainOrchestrator:
                 message=f"Elevated emotional risk detected: {raw_label.value}.",
             )
 
-        print(
+        debug_print(
             "[BRAIN] stable emotion:",
             state.stable_emotion_label,
             f"{state.stable_emotion_confidence:.2f}",
@@ -355,10 +357,10 @@ class BrainOrchestrator:
         state.last_decision = decision
         self._set_active_intervention(state, self._action_name(decision.action))
 
-        print("=== PATIENT MESSAGE DEBUG ===")
-        print("Decision:", decision.action)
-        print("Signals:", state.last_signals)
-        print("Transcript:", transcript.transcript if transcript else None)
+        debug_print("=== PATIENT MESSAGE DEBUG ===")
+        debug_print("Decision:", decision.action)
+        debug_print("Signals:", state.last_signals)
+        debug_print("Transcript:", transcript.transcript if transcript else None)
 
         action_name = self._action_name(decision.action)
 
@@ -509,7 +511,7 @@ class BrainOrchestrator:
             # Keep only the last 8 entries (4 turns)
             state.conversation_history = state.conversation_history[-8:]
 
-            print("Rendered response:", out.text_to_say)
+            debug_print("Rendered response:", out.text_to_say)
 
         state.turn_index += 1
         state.phase = "WAITING"
@@ -893,12 +895,9 @@ class BrainOrchestrator:
             return "neutral", 0.0
 
         label_scores: Dict[str, float] = {}
-        total = 0.0
-
         for item in state.emotion_history:
             label = str(item.get("label", "neutral")).lower()
             conf = float(item.get("confidence", 0.0))
-            total += conf
             label_scores[label] = label_scores.get(label, 0.0) + conf
 
         if not label_scores:
@@ -907,7 +906,12 @@ class BrainOrchestrator:
         best_label = max(label_scores, key=label_scores.get)
         best_score = label_scores[best_label]
 
-        stable_conf = best_score / total if total > 0 else 0.0
+        # Report unavailable current observations immediately, not stale certainty.
+        latest = state.emotion_history[-1]
+        if float(latest.get("confidence", 0.0)) <= 0:
+            return "uncertain", 0.0
+        matching = [item for item in state.emotion_history if str(item.get("label", "neutral")).lower() == best_label]
+        stable_conf = best_score / len(matching) if matching else 0.0
         return best_label, stable_conf
 
     def _compute_intervention_group(self, state: SessionState) -> str:
@@ -924,12 +928,10 @@ class BrainOrchestrator:
             label = str(item.get("label", "neutral")).lower()
             conf = float(item.get("confidence", 0.0))
 
-            if label in {"angry", "agitated", "distressed"}:
-                grouped_scores["de_escalation"] += conf
-            elif label in {"sad", "anxious", "calm"}:
-                grouped_scores["reminiscence"] += conf
-            else:
-                grouped_scores["conversation"] += conf
+            grouped_scores[_emotion_to_mode(label)] += conf
+
+        if not any(grouped_scores.values()):
+            return "conversation"
 
         return max(grouped_scores, key=grouped_scores.get)
 
@@ -1090,9 +1092,9 @@ class BrainOrchestrator:
 
         path = self.protocol_root / filename
 
-        print("=== PROTOCOL LOAD DEBUG ===")
-        print("Loading protocol for:", action_name)
-        print("Protocol path:", path)
+        debug_print("=== PROTOCOL LOAD DEBUG ===")
+        debug_print("Loading protocol for:", action_name)
+        debug_print("Protocol path:", path)
 
         if not path.exists():
             print("Protocol file not found, using default.")
@@ -1103,7 +1105,7 @@ class BrainOrchestrator:
         with path.open("r", encoding="utf-8") as f:
             protocol = yaml.safe_load(f) or {}
 
-        print("Loaded protocol keys:", list(protocol.keys()))
+        debug_print("Loaded protocol keys:", list(protocol.keys()))
 
         self._protocol_cache[action_name] = protocol
         return protocol
@@ -1394,4 +1396,4 @@ class BrainOrchestrator:
 
     def _send_caregiver_alert(self, alert_type: str, patient_id: str) -> None:
         ts = self._now_iso()
-        print(f"[ALERT] {ts} type={alert_type} patient={patient_id}")
+        debug_print(f"[ALERT] {ts} type={alert_type} patient={patient_id}")

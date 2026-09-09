@@ -13,3 +13,5 @@ __MACOSX/
 frontend/node_modules/
 frontend/.next/
 node_modules/
+.venv/
+data/incoming_transcripts/

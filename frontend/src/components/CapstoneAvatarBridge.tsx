@@ -31,7 +31,7 @@ type ChatMessage = {
 
 type ConnectionState = "disconnected" | "connecting" | "connected" | "error";
 
-const SIMLI_FACE_ID = "0c2b8b04-5274-41f1-a21c-d5c98322efa9";
+const SIMLI_FACE_ID = "d2a5c7c6-fed9-4f55-bcb3-062f7cd20103";
 
 function normalizeText(text: string): string {
   return text
@@ -272,6 +272,12 @@ export default function CapstoneAvatarBridge({ data }: Props) {
         setLastTranscript(transcript);
         setStatus("Sending to Capstone brain...");
 
+        const audioBase64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result).split(",")[1] || "");
+          reader.onerror = () => reject(new Error("Could not read microphone audio"));
+          reader.readAsDataURL(blob);
+        });
         const queueRes = await fetch("/api/patient-message", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -279,6 +285,7 @@ export default function CapstoneAvatarBridge({ data }: Props) {
             patient_id: data.patient_id,
             transcript,
             language,
+            audio_base64: audioBase64,
           }),
         });
 

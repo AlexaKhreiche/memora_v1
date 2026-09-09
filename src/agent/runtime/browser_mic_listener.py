@@ -15,8 +15,9 @@ class BrowserMicListener:
     PATIENT_MESSAGE events onto the EventBus in the same shape as MicListener.
     """
 
-    def __init__(self, bus: EventBus, poll_interval_s: float = 0.1) -> None:
+    def __init__(self, bus: EventBus, poll_interval_s: float = 0.1, voice_emotion=None) -> None:
         self.bus = bus
+        self.voice_emotion = voice_emotion
         self.poll_interval_s = poll_interval_s
         self._running = False
         self._thread: threading.Thread | None = None
@@ -56,6 +57,8 @@ class BrowserMicListener:
                     language = str(payload.get("language", "unknown"))
 
                     if transcript:
+                        if self.voice_emotion is not None:
+                            self.voice_emotion.submit(payload)
                         self.bus.publish(
                             Event(
                                 type=EventType.PATIENT_MESSAGE,

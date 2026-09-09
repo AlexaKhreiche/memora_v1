@@ -1,335 +1,256 @@
-# ADRD Care Assistant — Capstone Project
+# Memora — ADRD Care Assistant
 
-A real-time, multimodal AI system that monitors and supports elderly patients with **Alzheimer's Disease and Related Dementias (ADRD)**. The system combines computer vision, emotion detection, speech recognition, and a large language model to provide safety monitoring and empathetic interaction — while keeping caregivers informed.
+A capstone prototype for supporting people with Alzheimer's Disease and Related Dementias (ADRD). Memora combines camera-based safety monitoring, local facial and speech-expression analysis, patient conversation, and a caregiver dashboard.
 
----
+## Contents
 
-## Table of Contents
-
-- [What It Does](#what-it-does)
-- [System Architecture](#system-architecture)
-- [Project Structure](#project-structure)
-- [Key Files Explained](#key-files-explained)
-- [Setup & Installation](#setup--installation)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Setup](#setup)
 - [Configuration](#configuration)
-- [Running the Project](#running-the-project)
-- [Running Tests](#running-tests)
-- [API Keys & Environment Variables](#api-keys--environment-variables)
+- [Running the app](#running-the-app)
+- [Emotion detection](#emotion-detection)
+- [Intervention mapping](#intervention-mapping)
+- [Terminal output and troubleshooting](#terminal-output-and-troubleshooting)
+- [Key files](#key-files)
+- [Validation](#validation)
 
----
+## Features
 
-## What It Does
+- Webcam-based fall and wandering/absence monitoring using MediaPipe and OpenCV.
+- Local facial-expression classification using a Vision Transformer (ViT), with DeepFace available for comparison.
+- Local English speech-emotion classification, combined with fresh facial scores.
+- Browser microphone recording, OpenAI Whisper transcription, and GPT-generated responses.
+- Simli animated avatar with OpenAI text-to-speech.
+- Conversation, reminiscence, and de-escalation interventions, plus safety protocols and caregiver reminders.
+- Patient and caregiver views with session state, alerts, routines, and conversation history.
 
-The system runs continuously and:
+Expression scores and intervention rules are prototype heuristics. They are not calibrated certainty about a person's internal emotional state or clinically validated treatment decisions.
 
-1. **Watches for safety events** — Uses the webcam and MediaPipe pose estimation to detect falls and wandering in real time.
-2. **Reads facial emotions** — Analyzes the patient's face via the Hume AI API to detect distress, agitation, or calmness.
-3. **Listens and responds** — Records the patient's speech, transcribes it with OpenAI Whisper, and generates a warm, context-aware response using GPT.
-4. **Manages daily routines** — Tracks scheduled activities (meals, naps, medication) and prompts caregivers when something is overdue.
-5. **Displays a caregiver dashboard** — A Next.js web UI gives caregivers a live view of the patient's emotional state, safety status, and recent conversation.
+## Architecture
 
----
+```text
+Browser microphone
+  ├─ /api/whisper → OpenAI transcription
+  └─ accepted transcript + audio → /api/patient-message
+       → local transcript queue → BrowserMicListener
+          ├─ PATIENT_MESSAGE → EventBus
+          └─ VoiceEmotion background worker → recent voice scores
 
-## System Architecture
+Webcam → face detection/cropping → ViT classifier
+                                   + recent voice scores
+                                   → EmotionMonitor → EMOTION_UPDATE
+Webcam → SafetyMonitor → SENSOR_ALERT
+Timer → routine checks
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                        run_live.py                      │
-│                     (main entry point)                  │
-└───────────────────────┬─────────────────────────────────┘
-                        │ events
-          ┌─────────────▼──────────────┐
-          │       EventBus (queue)     │
-          └─────────────┬──────────────┘
-                        │
-          ┌─────────────▼──────────────┐
-          │     BrainOrchestrator      │  ← decision engine
-          │   (brain_orchestrator.py)  │
-          └──┬──────────┬──────────────┘
-             │          │
-    ┌────────▼──┐  ┌────▼────────────────┐
-    │  LLM      │  │  Interventions      │
-    │ Responder │  │  (fall, de-escalate,│
-    │ (OpenAI)  │  │   remind, chat)     │
-    └───────────┘  └─────────────────────┘
-
-Inputs feeding the EventBus:
-  SafetyMonitor      → fall / wandering alerts     (webcam, 12 FPS)
-  EmotionMonitor     → emotion updates             (webcam,  2 FPS)
-  BrowserMicListener → patient speech transcripts  (microphone)
-  TimerTick          → periodic routine checks     (every 20s)
+EventBus → BrainOrchestrator → intervention + OpenAI response
+                           → JSON UI state → Next.js dashboards
+                                           → OpenAI TTS → Simli avatar
 ```
 
----
+Face and voice model construction is serialized with a shared lock. Loaded parameters and buffers are checked for unresolved `meta` tensors before the models are placed on the CPU. Inference runs locally after model downloads.
 
-## Project Structure
+## Setup
 
-```
-Capstone_Code/
-│
-├── src/                            # All Python backend code
-│   ├── agent/
-│   │   ├── core/
-│   │   │   ├── brain_orchestrator.py   # Central decision engine
-│   │   │   └── rules.py                # Event types & routing logic
-│   │   │
-│   │   ├── runtime/
-│   │   │   ├── run_live.py             # ← MAIN ENTRY POINT
-│   │   │   ├── event_bus.py            # Thread-safe event queue
-│   │   │   ├── safety_monitor.py       # Fall & wandering detection loop
-│   │   │   ├── emotion_detector.py     # Facial emotion loop (Hume API)
-│   │   │   ├── browser_mic_listener.py # Reads transcripts from frontend
-│   │   │   ├── ui_state_writer.py      # Writes JSON payload for the UI
-│   │   │   ├── latency_logger.py       # Logs response latency to CSV
-│   │   │   └── debug_printer.py        # Console logging helpers
-│   │   │
-│   │   ├── llm/
-│   │   │   ├── responder.py            # Calls OpenAI GPT to generate responses
-│   │   │   ├── prompt_builder.py       # Builds the system + user prompt
-│   │   │   └── protocol_loader.py      # Loads YAML interaction protocols
-│   │   │
-│   │   ├── perception/vision/
-│   │   │   ├── pose_tracker.py         # MediaPipe pose landmark extraction
-│   │   │   ├── fall_detector.py        # Fall detection logic
-│   │   │   └── presence_detector.py    # Wandering / absence detection
-│   │   │
-│   │   └── toolsimplementations/
-│   │       ├── tools/
-│   │       │   ├── hume_http.py                # Hume AI API client (face + voice)
-│   │       │   ├── emotion_safety_detector.py  # Maps emotion scores → risk level
-│   │       │   ├── conversation_listener.py    # Records mic → Whisper transcript
-│   │       │   └── daily_reminder_tool.py      # Checks schedule for overdue tasks
-│   │       └── interventions/
-│   │           ├── base_intervention.py
-│   │           ├── conversation_intervention.py
-│   │           ├── de_escalation_intervention.py
-│   │           ├── fall_intervention.py
-│   │           ├── reminiscence_intervention.py
-│   │           └── registry.py                 # Maps ActionType → intervention class
-│   │
-│   ├── models/
-│   │   ├── state.py            # SessionState — tracks all live session data
-│   │   ├── decision.py         # ActionType enum & Decision model
-│   │   ├── answer.py           # AnswerPayload model
-│   │   ├── shared.py           # Shared enums (EmotionLabel, RiskLevel)
-│   │   └── tools_schemas/      # Pydantic schemas for tool outputs
-│   │
-│   └── utils/
-│       ├── patient_store.py    # Load/save patient profile JSON
-│       ├── caregiver_updates.py# Mark activities as completed
-│       └── schedule_utils.py   # Merge routine templates with daily overrides
-│
-├── frontend/                   # Next.js caregiver + patient UI
-│   ├── src/app/
-│   │   ├── page.tsx            # Patient-facing avatar dashboard
-│   │   ├── caregiver/          # Caregiver monitoring dashboard
-│   │   └── api/                # API routes (audio upload, status)
-│   └── package.json
-│
-├── data/
-│   ├── patients/
-│   │   ├── P001/profile.json   # Patient profile (name, routines, preferences)
-│   ├── incoming_transcripts/   # Audio transcripts written by the frontend
-│   └── latest_ui_payload.json  # Current UI state (written by backend)
-│
-├── tests/                       # Pytest test suite
-├── test_fall_detector.py         # Standalone webcam fall detection demo
-├── test_wandering_detector.py    # Standalone webcam wandering detection demo
-├── requirements.txt
-├── pyproject.toml
-└── .env                         # API keys — DO NOT commit
-```
+The development setup uses macOS and Python 3.11. Other platforms have not been validated with this dependency set.
 
----
+Requirements:
 
-## Key Files Explained
+- Python **3.11** for the installed TensorFlow/DeepFace stack.
+- Node.js **20.9 or newer**, as required by the installed Next.js version, and npm.
+- Webcam, microphone, and browser camera/microphone permissions.
+- Internet access for initial model downloads and the OpenAI/Simli services.
+- OpenAI API key; Simli API key for the animated avatar.
 
-| File | Purpose |
-|------|---------|
-| `src/agent/runtime/run_live.py` | Starts all monitors and runs the main event loop. This is what you run to launch the agent. |
-| `src/agent/core/brain_orchestrator.py` | The "brain" — receives events, decides what action to take, and coordinates the response. |
-| `src/agent/core/rules.py` | Defines all `EventType` values and the `choose_decision()` logic that maps sensor state to an action. |
-| `src/agent/llm/responder.py` | Sends a prompt to OpenAI GPT and returns the agent's spoken response. |
-| `src/agent/toolsimplementations/tools/hume_http.py` | Sends image frames or audio bytes to Hume AI and returns emotion confidence scores. |
-| `src/models/state.py` | `SessionState` — a single Pydantic model holding everything: emotion history, safety state, current intervention, and conversation log. |
-| `data/patients/P001/profile.json` | Patient profile with name, routines, preferences, and caregiver contacts. Edit this to configure a patient. |
-
----
-
-## Setup & Installation
-
-### Prerequisites
-
-- Python **3.10 or 3.11**
-- Node.js **18+** and npm (for the frontend)
-- A webcam and microphone
-- API keys for OpenAI and Hume AI (see [API Keys](#api-keys--environment-variables) below)
-
----
-
-### Step 1 — Clone the repository
+From your cloned repository's root:
 
 ```bash
-git clone <your-repo-url>
-cd Capstone_Code
-```
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 
-### Step 2 — Create a Python virtual environment
-
-```bash
-python -m venv venv
-
-# Activate it:
-source venv/bin/activate        # macOS / Linux
-venv\Scripts\activate           # Windows
-```
-
-### Step 3 — Install Python dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### Step 4 — Set up your environment variables
-
-Create a `.env` file in the project root (see the [API Keys](#api-keys--environment-variables) section for what to put in it).
-
-```bash
-# Create the file and fill in your keys
-touch .env
-```
-
-### Step 5 — Install frontend dependencies
-
-```bash
 cd frontend
 npm install
 cd ..
 ```
 
----
+PyTorch, Transformers, TensorFlow, and model weights require substantial download and disk space. The speech decoder is supplied by `imageio-ffmpeg`.
 
 ## Configuration
 
-### Patient Profile
+Create `.env` in the repository root:
 
-Each patient has a profile stored at `data/patients/{PATIENT_ID}/profile.json`. Edit this to configure the patient the system will monitor:
+```env
+OPENAI_API_KEY=your_openai_api_key
 
-```json
-{
-  "patient_id": "P001",
-  "name": "Farah",
-  "preferred_language": "english",
-  "preferences": "music, church, talking about family",
-  "calming_topics": "dancing, food, coffee with neighbors",
-  "triggers_to_avoid": "death of loved ones",
-  "caregiver_contacts": [],
-  "routine_template": {
-    "activities": [
-      {
-        "id": "lunch_time",
-        "title": "Lunch Time",
-        "time": "12:30",
-        "notify_before_min": 5
-      }
-    ]
-  }
-}
+# 1 = facial + speech emotion; 0 = speech emotion only
+FACIAL_EMOTION_ENABLED=1
+
+# vit (default) or deepface
+FACE_EMOTION_BACKEND=vit
+
+# 0 = compact terminal output; 1 = detailed diagnostics
+MEMORA_VERBOSE=0
 ```
 
-Set the `PATIENT_ID` variable in your `.env` file to match the folder name (e.g., `P001`).
+Create `frontend/.env.local`:
 
----
+```env
+OPENAI_API_KEY=your_openai_api_key
+NEXT_PUBLIC_SIMLI_API_KEY=your_simli_api_key
+```
 
-## Running the Project
+No Hume key is required by the live emotion pipeline. The older Hume client remains in the source tree but is not used by `run_live.py`.
 
-Both the backend and frontend need to be running at the same time. Open two terminal windows.
+The avatar face ID is configured as `SIMLI_FACE_ID` in `frontend/src/components/CapstoneAvatarBridge.tsx`. Restart the relevant process after changing environment settings. The backend loads `.env` with `override=True`, so values in that file take precedence over shell environment values.
 
-### Terminal 1 — Start the backend agent
+API key portals: [OpenAI](https://platform.openai.com/api-keys), [Simli](https://www.simli.com/).
+
+### Patient profile and local data
+
+The live entry point currently selects **P001** in `src/agent/runtime/run_live.py`; it does not read a `PATIENT_ID` environment variable. Patient details and routines are stored in `data/patients/P001/profile.json` and its associated daily files. The caregiver interface also provides profile editing.
+
+The frontend writes accepted utterances, including base64 audio, to `data/incoming_transcripts/`. The backend deletes each file after consuming it; failed or unprocessed messages can remain on disk. This queue, `.venv`, and environment files are ignored by git. Runtime UI state and other patient files may still be tracked: review your diff before publishing and use demo data in a public repository.
+
+## Running the app
+
+Open two terminals. Run these commands from the repository root.
+
+**Backend:**
 
 ```bash
-# From the project root, with your virtual environment activated
-cd src
-python -m agent.runtime.run_live
+source .venv/bin/activate
+PYTHONPATH=src python -m agent.runtime.run_live
 ```
 
-This starts:
-- **Safety monitor** — webcam at 12 FPS for fall and wandering detection
-- **Emotion monitor** — webcam at 2 FPS for facial expression analysis via Hume AI
-- **Mic listener** — reads transcripts provided by the frontend
-- **Brain event loop** — processes all events and generates responses
+If your terminal is already inside `src`, use:
 
-### Terminal 2 — Start the frontend
+```bash
+../.venv/bin/python -m agent.runtime.run_live
+```
+
+**Frontend:**
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Then open your browser to [http://localhost:3000](http://localhost:3000).
+Visit [localhost:3000](http://localhost:3000) for the patient avatar and [localhost:3000/caregiver](http://localhost:3000/caregiver) for the caregiver dashboard. Start the avatar session and permit microphone access to provide speech input. Stop the backend with `Ctrl+C`.
 
-- **`/`** — Patient-facing avatar that speaks the agent's responses aloud
-- **`/caregiver`** — Caregiver dashboard showing emotion state, safety alerts, and activity reminders
+The safety loop targets 12 FPS and the facial loop targets 2 FPS; actual throughput depends on hardware and inference time. Emotion events are published approximately once per second. Routine checks run every 20 seconds.
 
----
+## Emotion detection
 
-### Standalone Vision Demos (no API keys needed)
+### Face
 
-These let you test the camera pipeline on its own, without running the full system:
+The default classifier is [dima806/facial_emotions_image_detection](https://huggingface.co/dima806/facial_emotions_image_detection). DeepFace supplies OpenCV face detection and alignment; the RGB face crop goes through the ViT image processor and classifier.
+
+- Seven raw labels: happy, sad, neutral, angry, disgust, fear, and surprise.
+- Exactly one detected face is required. No face or multiple faces produce no facial scores.
+- `FACE_EMOTION_BACKEND=deepface` selects the previous DeepFace expression classifier for comparison.
+- Hugging Face weights download on first use and are cached locally. The optional DeepFace expression weights use `~/.deepface/weights`.
+
+Changing classifiers does not guarantee improved webcam accuracy. Compare raw face-only readings on the same lighting, camera position, and expressions.
+
+### Speech
+
+The background worker uses [superb/wav2vec2-base-superb-er](https://huggingface.co/superb/wav2vec2-base-superb-er), analyzing audio rather than the transcript's meaning.
+
+- Supported language: English (`en` or `english`).
+- Labels: neutral, happy, angry, and sad.
+- Audio is submitted after the existing browser echo and duplicate-transcript filters.
+- Audio is decoded locally to 16 kHz mono; analysis is capped at 15 seconds.
+- Clips shorter than one second, near-silence, and predictions whose top score is below 0.5 are skipped.
+- A bounded queue keeps the latest pending utterance. Transcription and conversation are not blocked by model inference.
+
+### Fusion and speech-only mode
+
+Fresh voice and facial scores are blended equally (50/50). If only one source is available, its scores are used alone. Voice scores expire ten seconds after submission to the worker, including time spent waiting and running inference. A new submitted utterance clears the previous voice scores.
+
+Set `FACIAL_EMOTION_ENABLED=0` in `.env` and restart to test speech alone. This skips the facial model and its camera capture, while the separate fall/wandering monitor remains active. Set it back to `1` to restore combined emotion detection.
+
+Absent usable scores produce `uncertain` at zero confidence. The existing four-second emotion history selects a confidence-weighted winning label, with average confidence among that label's readings. The additional three-second switching delay tested during development is not enabled.
+
+## Intervention mapping
+
+| Detector label | App emotion | Mapped intervention |
+| --- | --- | --- |
+| Happy | Happy | Conversation |
+| Sad | Sad | Reminiscence |
+| Neutral | Neutral | Reminiscence |
+| Angry or disgust | Agitated | De-escalation |
+| Fear | Distressed | De-escalation |
+| Surprise | Uncertain | Conversation |
+| No usable scores | Uncertain, 0% | Default conversation |
+
+The rules also support calm → reminiscence, anxious → de-escalation, and confused → conversation. The current face and voice models do not directly produce those three labels. Mapping fear to distressed or anger to agitated is an application choice, not an additional model inference.
+
+Actual selection also uses confidence, duration, and session state. Safety events and caregiver reminders take priority. A printed individual emotion reading does not necessarily represent the stabilized emotion used for intervention selection.
+
+## Terminal output and troubleshooting
+
+Compact logging is the default:
+
+```text
+EMOTION | happy (72%) | source=face+voice
+INTERVENTION | conversation
+💬 PATIENT (lang=english, conf=1.00) | Hello Maria.
+🤖 AVATAR [intervention=conversation] | Hello! How are you today?
+SAFETY | active=no | fall=False | wandering=False
+```
+
+Emotion lines repeat when the label, source, or ten-percentage-point score bucket changes. Intervention and safety status print on changes; every avatar reply includes its active intervention. Patient and avatar text is not truncated. The speech text is the backend response sent for playback, not confirmation that the browser played it.
+
+Errors remain visible. Set `MEMORA_VERBOSE=1` in `.env` and restart for internal model diagnostics, full UI payloads, and terminal latency logs. CSV latency recording remains enabled in compact mode.
+
+| Symptom | What to check |
+| --- | --- |
+| `No module named 'agent'` | From the root, include `PYTHONPATH=src`; alternatively run inside `src`. |
+| `.venv/bin/python: no such file` | Inside `src`, use `../.venv/bin/python`. |
+| Facial classifier disabled/import error | Use the project `.venv`, install `requirements.txt`, and restart after code updates. |
+| Repeated `meta`/CPU tensor errors | Confirm both models use the shared loader in `model_loading.py`; restart to discard previously loaded models. |
+| `uncertain (0%)` | No usable scores. Enable verbose output to distinguish initialization errors, inference errors, and missing/multiple faces. |
+| Only `source=face` | Voice may be skipped, unavailable, or expired. Check verbose `[VoiceEmotion]` messages immediately after an English utterance. |
+| `source=voice` | Voice scores contributed without usable facial scores, or speech-only mode is enabled. |
+| `source=face+voice` | Both signals contributed to that reading. |
+
+Third-party libraries may still print startup/download messages or deprecation warnings, including MediaPipe's `SymbolDatabase.GetPrototype()` warning. That warning alone does not indicate failed emotion inference.
+
+## Key files
+
+| File | Purpose |
+| --- | --- |
+| `src/agent/runtime/run_live.py` | Starts monitors, the timer, and event processing. |
+| `src/agent/runtime/emotion_detector.py` | Face capture, face/voice fusion, and emotion events. |
+| `src/agent/runtime/voice_emotion.py` | Audio decoding, local speech inference, score expiry, and fusion. |
+| `src/agent/runtime/model_loading.py` | Shared model-construction lock and CPU tensor validation. |
+| `src/agent/toolsimplementations/tools/vit_face_client.py` | Default ViT facial classifier. |
+| `src/agent/toolsimplementations/tools/deepface_client.py` | Alternative DeepFace expression classifier. |
+| `src/agent/toolsimplementations/tools/emotion_safety_detector.py` | Expression-to-app-label mapping and risk heuristics. |
+| `src/agent/core/rules.py` | Event definitions and intervention rules. |
+| `src/agent/core/brain_orchestrator.py` | Session history, decisions, interventions, and UI state. |
+| `src/agent/runtime/debug_printer.py` | Compact live terminal output. |
+| `frontend/src/components/CapstoneAvatarBridge.tsx` | Avatar, microphone capture, and utterance submission. |
+| `frontend/src/app/api/patient-message/route.ts` | Atomic local transcript/audio queue writes. |
+| `frontend/src/app/api/whisper/route.ts` | OpenAI speech transcription. |
+| `frontend/src/app/api/avatar-tts/route.ts` | OpenAI speech synthesis. |
+| `data/latest_ui_payload.json` | Runtime state consumed by the frontend. |
+
+## Validation
+
+From the repository root:
 
 ```bash
-# Shows a live webcam feed with pose overlay and fall detection
-python test_fall_detector.py
+# Focused local emotion tests
+.venv/bin/python -m pytest tests/test_local_emotions.py tests/test_voice_emotion.py tests/test_vit_face.py tests/test_speech_only.py -q
 
-# Shows a live webcam feed with wandering / absence detection
-python test_wandering_detector.py
+# Other project tests
+.venv/bin/python -m pytest tests/
+
+# Frontend type check
+cd frontend
+npx tsc --noEmit
 ```
 
-Press `Q` to close the demo window.
-
----
-
-## Running Tests
-
-```bash
-# Run all tests from the project root
-pytest tests/
-
-# Run a specific test with verbose output
-pytest tests/test_reminders.py -v
-```
-
----
-
-## API Keys & Environment Variables
-
-Create a `.env` file in the **project root** with the following:
-
-```env
-# Required — OpenAI (GPT for responses + Whisper for speech transcription)
-OPENAI_API_KEY=sk-proj-...
-
-# Required — Hume AI (facial and vocal emotion detection)
-HUME_API_KEY=...
-
-# The patient profile to load (matches folder name under data/patients/)
-PATIENT_ID=P001
-```
-
-Create a `frontend/.env.local` file for the frontend:
-
-```env
-OPENAI_API_KEY=sk-proj-...
-NEXT_PUBLIC_SIMLI_API_KEY=...     # Optional: enables the animated avatar
-```
-
-> **Important:** Never commit `.env` or `.env.local` to version control. Both files are already listed in `.gitignore`.
-
-### Where to get your API keys
-
-| Key | Link |
-|-----|------|
-| `OPENAI_API_KEY` | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
-| `HUME_API_KEY` | [platform.hume.ai](https://platform.hume.ai) |
-| `NEXT_PUBLIC_SIMLI_API_KEY` | [simli.com](https://simli.com) — optional, only needed for the avatar |
-# memora_v1
+Focused tests cover score conversion, missing/multiple faces, mapping, voice expiry, queue behavior, preprocessing, and speech-only camera bypass. Synthetic inference checks performed during integration confirmed that the actual face and voice weights could load and run on CPU together. These checks do not establish accuracy on real patient recordings; live microphone, webcam, and avatar behavior need manual evaluation.

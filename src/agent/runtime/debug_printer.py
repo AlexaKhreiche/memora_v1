@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from agent.runtime.debug_log import debug_print
 from typing import Any, Dict, Optional
 
 
@@ -31,7 +32,7 @@ def print_kv(label: str, value: Any) -> None:
 
 
 def print_status(message: str) -> None:
-    print(f"✅ {message}")
+    debug_print(f"✅ {message}")
 
 
 def print_error(message: str) -> None:
@@ -68,11 +69,11 @@ def print_patient_message(text: str, language: Optional[str] = None, confidence:
         suffix.append(f"conf={confidence:.2f}")
 
     meta = f" ({', '.join(suffix)})" if suffix else ""
-    print(f"💬 MESSAGE{meta} | {_truncate(text, 160)}")
+    print(f"💬 PATIENT{meta} | {str(text).replace(chr(10), ' ')}")
 
 
-def print_avatar_response(text: str) -> None:
-    print(f"🤖 AVATAR | {_truncate(text, 180)}")
+def print_avatar_response(text: str, intervention: Optional[str] = None) -> None:
+    print(f"🤖 AVATAR [intervention={intervention or 'none'}] | {str(text).replace(chr(10), ' ')}")
 
 
 def print_timer_tick() -> None:
@@ -124,3 +125,28 @@ def print_full_payload_if_enabled(payload: Dict[str, Any]) -> None:
         print("📦 FULL UI PAYLOAD JSON")
         print(_as_pretty_json(payload))
         print(LINE)
+
+class LiveConsole:
+    """Only repeat status when its meaningful state changes."""
+    def __init__(self):
+        self.previous = {}
+
+    def changed(self, key, value, message):
+        if self.previous.get(key) != value:
+            print(message)
+            self.previous[key] = value
+
+    def update(self, state, event=None):
+        if event is not None and str(event.type.value) == "EMOTION_UPDATE":
+            payload = event.payload
+            label = payload.get("emotion_label", "uncertain")
+            source = payload.get("source", "unknown")
+            percent = round(float(payload.get("emotion_confidence", 0)) * 100)
+            # Ignore small score fluctuations, but always show a source/label change.
+            self.changed("emotion", (label, source, percent // 10),
+                         f"EMOTION | {label} ({percent}%) | source={source}")
+        intervention = state.active_intervention or "none"
+        self.changed("intervention", intervention, f"INTERVENTION | {intervention}")
+        safety = (state.fall_active, state.wandering_active)
+        self.changed("safety", safety,
+                     f"SAFETY | active={'yes' if any(safety) else 'no'} | fall={safety[0]} | wandering={safety[1]}")

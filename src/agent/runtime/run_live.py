@@ -14,7 +14,9 @@ from agent.runtime.event_bus import EventBus
 from agent.runtime.safety_monitor import SafetyMonitor
 from agent.runtime.browser_mic_listener import BrowserMicListener
 from agent.runtime.emotion_detector import EmotionMonitor
+from agent.runtime.voice_emotion import VoiceEmotion
 from agent.runtime.debug_printer import (
+    LiveConsole,
     print_status,
     print_error,
     print_emotion_update,
@@ -59,14 +61,16 @@ def main() -> None:
     bus = EventBus()
     brain = BrainOrchestrator()
     state = SessionState(patient_id=patient_id)
+    console = LiveConsole()
 
     out = brain.handle_event(
         state,
         Event(type=EventType.SYSTEM_START, payload={"patient_id": patient_id}),
     )
 
+    console.update(state)
     if out is not None and out.text_to_say:
-        print_avatar_response(out.text_to_say)
+        print_avatar_response(out.text_to_say, intervention=state.active_intervention)
 
     monitor = SafetyMonitor(
         bus=bus,
@@ -79,7 +83,10 @@ def main() -> None:
     monitor.start()
     print_status("SafetyMonitor running.")
 
+    voice_emotion = VoiceEmotion()
+    voice_emotion.start()
     emotion = EmotionMonitor(
+        voice_emotion=voice_emotion,
         bus=bus,
         patient_id=patient_id,
         camera_index=0,
@@ -90,7 +97,7 @@ def main() -> None:
     emotion.start()
     print_status("EmotionMonitor running.")
 
-    mic = BrowserMicListener(bus=bus)
+    mic = BrowserMicListener(bus=bus, voice_emotion=voice_emotion)
     mic.start()
     print_status("BrowserMicListener running (press Ctrl+C to stop).")
 
@@ -105,33 +112,24 @@ def main() -> None:
             except Empty:
                 continue
 
-            if event.type == EventType.EMOTION_UPDATE:
-                print_emotion_update(event.payload)
-
-            elif event.type == EventType.SENSOR_ALERT:
-                print_sensor_alert(event.payload)
-
-            elif event.type == EventType.PATIENT_MESSAGE:
+            if event.type == EventType.PATIENT_MESSAGE:
                 print_patient_message(
                     text=event.payload.get("text", ""),
                     language=event.payload.get("language"),
                     confidence=float(event.payload.get("confidence", 1.0)),
                 )
 
-            elif event.type == EventType.TIMER_TICK:
-                print_timer_tick()
 
             out = brain.handle_event(state, event)
+            console.update(state, event)
 
             if out is None:
                 time.sleep(0.05)
                 continue
 
-            if getattr(out, "caregiver_alert_sent", False):
-                print_caregiver_alert_sent()
 
             if out.text_to_say:
-                print_avatar_response(out.text_to_say)
+                print_avatar_response(out.text_to_say, intervention=state.active_intervention)
 
             time.sleep(0.05)
 
@@ -150,6 +148,7 @@ def main() -> None:
             pass
         try:
             emotion.stop()
+            voice_emotion.stop()
         except Exception:
             pass
         try:
