@@ -74,6 +74,8 @@ class EmotionMonitor:
                     if backend not in ("vit", "deepface"):
                         raise ValueError("FACE_EMOTION_BACKEND must be vit or deepface")
                     self.face_client = ViTFaceClient() if backend == "vit" else DeepFaceClient()
+                    from agent.runtime.patient_identity import PatientFaceClient
+                    self.face_client = PatientFaceClient(self.face_client, self.patient_id)
                     debug_print(f"[EmotionMonitor] Facial classifier ready: {backend}")
                 except Exception as e:
                     print(f"[EmotionMonitor] Facial classifier disabled: {e}; Python={sys.executable}. Use the project .venv and restart.")
@@ -129,6 +131,7 @@ class EmotionMonitor:
                                 "risk_level": str(getattr(report.risk_level, "value", report.risk_level)),
                                 "risk_score": float(report.risk_score),
                                 "source": source,
+                                "identity_status": detection_status,
                             },
                         )
                     )

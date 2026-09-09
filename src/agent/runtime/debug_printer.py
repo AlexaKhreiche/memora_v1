@@ -139,6 +139,9 @@ class LiveConsole:
     def update(self, state, event=None):
         if event is not None and str(event.type.value) == "EMOTION_UPDATE":
             payload = event.payload
+            identity = payload.get("identity_status")
+            if identity:
+                self.changed("identity", identity, f"IDENTITY | {identity}")
             label = payload.get("emotion_label", "uncertain")
             source = payload.get("source", "unknown")
             percent = round(float(payload.get("emotion_confidence", 0)) * 100)

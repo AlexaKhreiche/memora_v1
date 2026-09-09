@@ -139,6 +139,16 @@ class BrainOrchestrator:
         return self._finalize_output(state, out)
 
     def _handle_sensor_alert(self, state: SessionState, event: Event) -> AnswerPayload:
+        if event.payload.get("patient_returned") is True:
+            state.wandering_active = False
+            state.wandering_active_since_iso = None
+            if state.last_signals is not None:
+                state.last_signals.wandering_detected = False
+                state.last_signals.wandering_confidence = 0.0
+            self._append_safety_log(state=state, event_type="wandering", active=False,
+                                    confidence=0.0, reasons=["Enrolled patient re-identified"])
+            return self._finalize_output(state, AnswerPayload())
+
         state.phase = "PROCESSING"
 
         signals = self._build_sensor_signals_from_event(event.payload)
@@ -159,11 +169,11 @@ class BrainOrchestrator:
 
         action_name = self._action_name(decision.action)
 
-        if not signals.fall_detected:
+        if "fall" in event.payload and not signals.fall_detected:
             state.fall_active = False
             state.fall_active_since_iso = None
 
-        if not signals.wandering_detected:
+        if "wandering" in event.payload and not signals.wandering_detected:
             state.wandering_active = False
             state.wandering_active_since_iso = None
 

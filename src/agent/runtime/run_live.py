@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import time
+import os
 import threading
 from queue import Empty
 
@@ -58,6 +59,8 @@ class TimerPublisher:
 def main() -> None:
     patient_id = "P001"
     load_dotenv(override=True)
+    camera_index = int(os.getenv("CAMERA_INDEX", "0"))
+    print(f"CAMERA | OpenCV index={camera_index}")
     bus = EventBus()
     brain = BrainOrchestrator()
     state = SessionState(patient_id=patient_id)
@@ -75,7 +78,7 @@ def main() -> None:
     monitor = SafetyMonitor(
         bus=bus,
         patient_id=patient_id,
-        camera_index=0,
+        camera_index=camera_index,
         fps=12.0,
         alert_cooldown_s=8.0,
         show_preview=True,
@@ -89,7 +92,7 @@ def main() -> None:
         voice_emotion=voice_emotion,
         bus=bus,
         patient_id=patient_id,
-        camera_index=0,
+        camera_index=camera_index,
         fps=2.0,
         publish_every_s=1.0,
         show_preview=False,
