@@ -15,3 +15,5 @@ frontend/.next/
 node_modules/
 .venv/
 data/incoming_transcripts/
+
+data/patients/*/identity/

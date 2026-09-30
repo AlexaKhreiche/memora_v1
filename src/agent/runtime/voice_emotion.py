@@ -55,7 +55,7 @@ class VoiceEmotion:
             return face, 'face'
         if not face:
             return voice, 'voice'
-        return {key: 0.5 * face.get(key, 0) + 0.5 * voice.get(key, 0)
+        return {key: 0.2 * face.get(key, 0) + 0.8 * voice.get(key, 0)
                 for key in face.keys() | voice.keys()}, 'face+voice'
 
     def _loop(self):

@@ -12,6 +12,8 @@ export default function PatientProfileForm({ patientId }: Props) {
     ...defaultPatientProfile,
     patient_id: patientId,
   });
+  const [enrolling, setEnrolling] = useState(false);
+  const [identityStatus, setIdentityStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState("");
 
@@ -37,6 +39,22 @@ export default function PatientProfileForm({ patientId }: Props) {
 
     loadProfile();
   }, [patientId]);
+
+  async function enrollFace(photo: File) {
+    setEnrolling(true);
+    setIdentityStatus("Verifying reference photo… First enrollment may take a few minutes.");
+    try {
+      const body = new FormData();
+      body.append("patient_id", patientId);
+      body.append("photo", photo);
+      const res = await fetch("/api/patient-face", { method: "POST", body });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error);
+      setIdentityStatus("Patient reference enrolled. Facial analysis will now verify this person.");
+    } catch (error) {
+      setIdentityStatus(error instanceof Error ? error.message : "Enrollment failed");
+    } finally { setEnrolling(false); }
+  }
 
   function updateField<K extends keyof PatientProfile>(key: K, value: PatientProfile[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -85,6 +103,13 @@ export default function PatientProfileForm({ patientId }: Props) {
         </p>
       </div>
 
+      <div className="rounded-2xl border border-slate-200 p-4 space-y-2">
+        <label className="block font-medium" htmlFor="patient-face">Patient reference photo</label>
+        <p className="text-sm text-slate-500">Upload one clear face (JPEG or PNG, up to 5 MB). Uploading again replaces the reference. Photo is processed locally; only its face representation is retained.</p>
+        <input id="patient-face" type="file" accept="image/jpeg,image/png" disabled={enrolling}
+          onChange={(e) => { const photo = e.target.files?.[0]; if (photo) void enrollFace(photo); e.target.value = ""; }} />
+        <p role="status" className="text-sm">{identityStatus}</p>
+      </div>
       <div className="grid grid-cols-1 gap-4">
         <input
           className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-100"

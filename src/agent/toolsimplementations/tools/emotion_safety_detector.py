@@ -63,7 +63,9 @@ def _risk_from_emotion(label: EmotionLabel, conf: float) -> Tuple[float, RiskLev
 
 
 class EmotionSafetyDetector:
-    """Face-only emotion mapping using DeepFace scores."""
+    """Map facial or fused scores, requiring strong evidence for distress."""
+
+    DISTRESS_MIN_CONFIDENCE = 0.85
 
     def build_report(
         self,
@@ -82,6 +84,9 @@ class EmotionSafetyDetector:
             conf = 0.0
         else:
             label, conf = aggregated[0]
+            if label == EmotionLabel.distressed and conf < self.DISTRESS_MIN_CONFIDENCE:
+                # Weak fear evidence does not establish distress or another emotion.
+                label, conf = EmotionLabel.uncertain, 0.0
 
         risk_score, risk_level = _risk_from_emotion(label, conf)
 

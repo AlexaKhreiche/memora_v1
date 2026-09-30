@@ -147,7 +147,7 @@ The safety loop targets 12 FPS and the facial loop targets 2 FPS; actual through
 The default classifier is [dima806/facial_emotions_image_detection](https://huggingface.co/dima806/facial_emotions_image_detection). DeepFace supplies OpenCV face detection and alignment; the RGB face crop goes through the ViT image processor and classifier.
 
 - Seven raw labels: happy, sad, neutral, angry, disgust, fear, and surprise.
-- Exactly one detected face is required. No face or multiple faces produce no facial scores.
+- A patient reference is required. Among detected faces, only a unique verified patient match receives facial-expression analysis.
 - `FACE_EMOTION_BACKEND=deepface` selects the previous DeepFace expression classifier for comparison.
 - Hugging Face weights download on first use and are cached locally. The optional DeepFace expression weights use `~/.deepface/weights`.
 
@@ -166,7 +166,9 @@ The background worker uses [superb/wav2vec2-base-superb-er](https://huggingface.
 
 ### Fusion and speech-only mode
 
-Fresh voice and facial scores are blended equally (50/50). If only one source is available, its scores are used alone. Voice scores expire ten seconds after submission to the worker, including time spent waiting and running inference. A new submitted utterance clears the previous voice scores.
+Fresh voice and facial scores are blended with 80% voice and 20% face weight. If only one source is available, its scores are used alone. Voice scores expire ten seconds after submission to the worker, including time spent waiting and running inference. A new submitted utterance clears the previous voice scores.
+
+Fear must be the highest-scoring expression and reach at least 0.85 to map to distressed. A leading fear score below this threshold produces uncertain at zero confidence, including when voice is unavailable or expired. This threshold applies to the final scores after fusion; the voice model has no fear label, so fresh voice evidence suppresses facial distress in the combined result. These are tuning defaults, not calibrated probabilities of actual distress.
 
 Set `FACIAL_EMOTION_ENABLED=0` in `.env` and restart to test speech alone. This skips the facial model and its camera capture, while the separate fall/wandering monitor remains active. Set it back to `1` to restore combined emotion detection.
 
@@ -180,7 +182,8 @@ Absent usable scores produce `uncertain` at zero confidence. The existing four-s
 | Sad | Sad | Reminiscence |
 | Neutral | Neutral | Reminiscence |
 | Angry or disgust | Agitated | De-escalation |
-| Fear | Distressed | De-escalation |
+| Fear (score ≥ 0.85) | Distressed | De-escalation |
+| Fear (score < 0.85) | Uncertain, 0% | Default conversation |
 | Surprise | Uncertain | Conversation |
 | No usable scores | Uncertain, 0% | Default conversation |
 
@@ -254,3 +257,66 @@ npx tsc --noEmit
 ```
 
 Focused tests cover score conversion, missing/multiple faces, mapping, voice expiry, queue behavior, preprocessing, and speech-only camera bypass. Synthetic inference checks performed during integration confirmed that the actual face and voice weights could load and run on CPU together. These checks do not establish accuracy on real patient recordings; live microphone, webcam, and avatar behavior need manual evaluation.
+
+### Logitech camera and emotion preview
+
+Set `CAMERA_INDEX=0` in the root `.env` for the Logitech camera confirmed in this
+setup. Camera indexes can change when devices are reconnected. Both monitors use
+this setting after restart. With the backend stopped, run from the project root:
+
+```bash
+.venv/bin/python src/scripts/preview_camera.py 0 --emotion
+```
+
+The standalone preview displays the facial model's top three raw expressions,
+the mapped app label, and result age. It uses `FACE_EMOTION_BACKEND` and analyzes
+faces independently of speech fusion. Missing or uncertain patient identity is reported
+explicitly. Press Q to close; an in-progress model load/inference may need to
+finish before the process exits. Omit `--emotion` for a camera-only preview.
+
+### Patient face enrollment
+
+In the caregiver dashboard's Patient Profile section, upload a JPEG or PNG reference
+photo (up to 5 MB) with exactly one clearly visible face. Enrollment runs locally
+using DeepFace's SFace identity model; the first enrollment may download its weights.
+The frontend must run alongside the project's `.venv` on the same machine.
+
+Only a normalized SFace embedding is retained in
+`data/patients/<patient_id>/identity/reference.json`; the uploaded image is temporary
+and deleted when enrollment finishes. Identity directories are excluded from git.
+Uploading another valid photo atomically replaces the reference. Delete that local
+reference file to remove enrollment; facial analysis then stops accepting faces.
+
+The live facial pipeline verifies every sampled frame against the active patient's
+reference, selecting only a unique sufficiently close match. It uses cosine distance
+at most 0.593 (the installed DeepFace SFace default) and a minimum 0.10 gap between
+the closest two candidates. These thresholds need validation with patient/bystander
+examples; they do not guarantee identity and provide no photo-spoof protection.
+No enrolled reference, no visible face, or an ambiguous match produces no facial
+emotion scores. Existing voice fusion may still supply an emotion independently.
+
+Compact logs and the standalone emotion preview report identity status. The preview
+currently uses P001, matching the live entry point. Runtime checks read the reference
+on each frame, so enrollment/replacement takes effect without a backend restart.
+This verification applies only to facial expressions: it does not identify the
+speaker or associate fall/wandering body detections with the patient.
+
+### Patient-specific wandering visibility
+
+The live safety monitor now uses the enrolled SFace reference for wandering checks,
+independently of whether facial emotion analysis is enabled. Identity is sampled
+approximately once per second in a background worker; generic body presence no
+longer resets the wandering timer. The session first needs a successful patient
+identification. If the patient is then not verified for eight seconds, the existing
+wandering alert flow runs, even if a bystander remains visible. Re-identifying the
+patient clears the wandering state without clearing an active fall alert.
+
+Missing enrollment, failed camera/identity processing, and results older than three
+seconds suspend the absence timer and require a new identification. They do not
+establish wandering. The safety preview shows identity status and elapsed absence.
+
+This measures loss of verified patient visibility, not confirmed departure from a
+room: prolonged occlusion, facing away, distance, or an identity mismatch can cause
+an alert. Validate the eight-second interval with the actual camera placement.
+Fall detection remains based on the existing pose pipeline and is not yet assigned
+to an identified patient. Speech speaker identity is also unchanged.
